@@ -1,0 +1,6 @@
+# Keep line endings as they are and never touch binary files.
+* -text
+*.png binary
+*.gz binary
+*.wasm binary
+*.node binary

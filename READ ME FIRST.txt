@@ -1,0 +1,130 @@
+DOCTrace Desktop 3.0.0 for Windows (64-bit) - works fully offline
+=================================================================
+
+DOCTrace records the steps you click through in any program or website, blacks
+out sensitive information (emails, phone numbers, ID numbers such as CNIC,
+passwords, API keys, card numbers) on your own computer, and writes a
+step-by-step guide with an explanation of every screenshot.
+
+Everything happens on this computer. DOCTrace does not connect to the internet:
+the AI that writes the guide (Ollama or LM Studio) and the speech-to-text
+(whisper.cpp) both run on this PC, and DOCTrace refuses to send anything
+anywhere else.
+
+HOW TO START IT
+  Open the folder "DOCTrace Desktop" and double-click  DOCTrace Desktop.exe
+  Nothing is installed. Keep the whole folder together (you can move it).
+
+  First start: "Windows protected your PC" may appear because this build is not
+  code-signed. Click "More info", then "Run anyway".
+  DOCTrace then runs in the system tray (bottom-right, near the clock).
+  Right-click the tray icon to quit.
+
+  Without any of the setup below DOCTrace already works: it records, blacks out
+  sensitive data and writes a simple description for every step. The setup adds
+  AI-written descriptions (A) and voice narration (B).
+
+--------------------------------------------------------------------------------
+OFFLINE SETUP (once, about 20-30 minutes including downloads)
+--------------------------------------------------------------------------------
+
+A. AI-written step descriptions with Ollama
+   1. Install Ollama for Windows from https://ollama.com  (a llama icon appears
+      in the tray).
+   2. Open "Command Prompt" and run these two commands:
+
+        setx OLLAMA_CONTEXT_LENGTH 8192
+        ollama pull qwen2.5vl:7b
+
+      The first gives the model enough room for DOCTrace's instructions plus a
+      screenshot (without it, answers get cut off). The second downloads the
+      model (about 6 GB). After this, no internet is needed.
+   3. Right-click the llama icon > Quit Ollama, then start Ollama again from the
+      Start menu (it must restart to read OLLAMA_CONTEXT_LENGTH).
+   4. In DOCTrace: Settings > Guide writer
+        - tick "Use AI"
+        - Model: "Ollama, reads the screenshots (recommended)"
+        - Model name: qwen2.5vl:7b        (already filled in)
+        - click Save. It should say "Ready."
+
+   Speed: on a PC without a graphics card each step can take a few minutes
+   (the very first one also loads the model). DOCTrace waits up to 10 minutes
+   per step. Too slow? Run  ollama pull qwen2.5vl:3b  and set Model name to
+   qwen2.5vl:3b (about twice as fast, slightly less detailed).
+
+   Other choices in Settings > Guide writer:
+     - "Ollama, text only": faster, but does not look at the screenshots, only
+       at the screen text. Run  ollama pull qwen2.5:7b  first.
+     - "LM Studio, text only": start LM Studio's local server (port 1234) with
+       a model loaded, and type that model's name.
+   The Endpoint must stay on this computer (localhost, port 11434, 1234 or 8080).
+
+B. Voice narration, transcribed on this computer (whisper.cpp) - optional
+   1. From https://github.com/ggml-org/whisper.cpp/releases download the Windows
+      x64 zip (whisper-bin-x64.zip) and unzip it to C:\tools\whisper\
+      (it contains whisper-cli.exe).
+   2. Download the model file ggml-base.en.bin (about 142 MB) from
+      https://huggingface.co/ggerganov/whisper.cpp  into C:\tools\whisper\
+      (ggml-small.en.bin is more accurate but about 3x slower).
+   3. In DOCTrace: Settings > Voice narration
+        - tick "Record my voice"    (the microphone is OFF until you do this)
+        - whisper-cli path:  C:\tools\whisper\whisper-cli.exe
+        - Model file:        C:\tools\whisper\ggml-base.en.bin
+        - Microphone: pick yours, then Save.
+   Narration is transcribed as English.
+
+  If "Start recording" shows an error such as "opening the microphone did not
+  respond", pick another microphone in Settings (or untick "Record my voice").
+  If it says "starting the click recorder did not respond", your antivirus may be
+  blocking the mouse/keyboard hook DOCTrace uses to see clicks: allow DOCTrace.
+
+--------------------------------------------------------------------------------
+USING IT
+--------------------------------------------------------------------------------
+  1. Click "Record" on the small floating bar.
+  2. Click through the task in any program and explain what you do out loud.
+     Each click becomes a step; staying still for 7 seconds also takes a snapshot.
+     The bar shows "mic on" (or "mic silent!" if the microphone hears nothing).
+  3. Click "Stop" (or press Ctrl+Shift+S). Wait until the guide opens: it first
+     transcribes your voice, then writes every step.
+  4. Edit anything, move or delete steps, then "Export to PDF".
+
+Where your guides are saved
+  %LOCALAPPDATA%\DOCTrace\Recordings\Recording_YYYY-MM-DD_HH-mm\
+  (paste %LOCALAPPDATA%\DOCTrace\Recordings into the File Explorer address bar)
+    manual.md, manual.html, manual.pdf, manual_manifest.json,
+    step_1.png, step_2.png, ..., narration.wav (your voice, if recorded)
+  This folder is not synced by OneDrive. Settings shows the folder in use; the
+  choice is kept in %APPDATA%\DOCTrace Desktop\recordings-location.json.
+  (A PC that already had guides in Documents\DOCTrace\Recordings from an older
+  DOCTrace keeps using that folder.)
+
+Deleting
+  - Deleting a guide in DOCTrace moves its whole folder (screenshots, manual
+    files and narration.wav) to the Recycle Bin. Empty the Recycle Bin to
+    remove it for good.
+  - Deleting or moving steps updates the saved files at once; screenshots of
+    deleted steps go to the Recycle Bin. Click "Export to PDF" again for an
+    up-to-date PDF.
+
+Privacy
+  Screenshots are read and blacked out on this computer, and nothing is sent
+  over the internet.
+  - narration.wav is your real voice, NOT scrubbed. Do not say passwords aloud.
+  - Detection reads text from screenshots and can miss text it cannot read
+    (text inside photos, non-English text): check the steps before sharing them.
+
+--------------------------------------------------------------------------------
+WHAT IS NEW IN 3.0.0
+--------------------------------------------------------------------------------
+  - Fully offline: the cloud services (Groq, Mistral, Google Gemini, Anthropic)
+    and cloud transcription are gone, together with their API key fields and
+    consent boxes. API keys saved by older versions are deleted on first start.
+  - Ollama is the default guide writer; the text-only Ollama and LM Studio
+    choices now work (before, their requests were blocked).
+  - The AI instructions use general examples for any program or website.
+  - New guides are saved in %LOCALAPPDATA%\DOCTrace\Recordings instead of
+    Documents (OneDrive).
+  - Deleting a guide also removes its files (to the Recycle Bin). Deleting or
+    moving steps no longer leaves old screenshots behind, and "Transcribe again"
+    still matches the narration correctly after steps were moved.

@@ -1,0 +1,13 @@
+{
+  "name": "doctrace-desktop",
+  "productName": "DOCTrace Desktop",
+  "private": true,
+  "version": "3.0.0",
+  "description": "Offline, privacy-first step recorder: records clicks in any app, blacks out sensitive data on the device, and writes a step-by-step guide.",
+  "main": "out/main/index.js",
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "uiohook-napi": "^1.5.4"
+  },
+  "author": "DOCTrace"
+}

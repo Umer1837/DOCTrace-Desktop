@@ -1,0 +1,19 @@
+# The runnable app (Electron runtime, 280 MB, exe over GitHub's 100 MB file limit).
+# It is published as a zip on the Releases page instead.
+/DOCTrace Desktop/
+
+# Release zips and other build output
+/release/
+*.zip
+*.asar
+
+# Recordings must never be committed (screenshots, narration.wav)
+Recording_*/
+narration.wav
+
+# Editor / OS files
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+*.log
